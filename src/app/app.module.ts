@@ -17,7 +17,6 @@ import { routes } from './app.routes';
 
 @NgModule({
   declarations: [
-  
   ],
   imports: [
     BrowserModule,
@@ -33,7 +32,7 @@ import { routes } from './app.routes';
     AboutComponent,
     RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [AppComponent],
   // Removed bootstrap array as AppComponent is a standalone component
 })
 export class AppModule { }
