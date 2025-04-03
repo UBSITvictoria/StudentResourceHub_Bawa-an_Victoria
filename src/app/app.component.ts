@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [HeaderComponent,FooterComponent,RouterModule],
+  imports: [HeaderComponent,FooterComponent,RouterModule,RouterOutlet],
   template: `
     <app-header></app-header>
     <div class="container mt-4">
