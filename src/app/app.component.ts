@@ -1,12 +1,20 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [HeaderComponent,FooterComponent,RouterModule],
+  template: `
+    <app-header></app-header>
+    <div class="container mt-4">
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+  `,
+  styles: []
 })
 export class AppComponent {
-  title = 'StudentResourceHub';
+  title = 'Student Resource Hub';
 }
