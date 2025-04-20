@@ -1,20 +1,25 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-footer',
+  standalone: true,
+  imports: [CommonModule],
   template: `
-    <footer class="bg-dark text-white p-3 mt-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-12 text-center">
-            <p>&copy; {{ currentYear }} Student Resource Hub</p>
-            <p>Team Members: Jane Doe, John Smith</p>
-          </div>
+    <footer class="bg-gray-800 text-white py-6 mt-auto">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <p class="mb-2">&copy; {{ currentYear }} Student Resource Hub. All rights reserved.</p>
+          <p class="text-gray-400">Created by Team Members: Victoria Bawa-an</p>
         </div>
       </div>
     </footer>
   `,
-  styles: []
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
 export class FooterComponent {
   currentYear = new Date().getFullYear();

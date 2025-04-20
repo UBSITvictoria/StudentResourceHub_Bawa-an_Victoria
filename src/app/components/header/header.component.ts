@@ -1,61 +1,61 @@
 import { Component } from '@angular/core';
-import { forwardRef } from "@angular/core";
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
+  imports: [RouterModule, CommonModule],
   template: `
-    <header class="bg-primary text-white p-3">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-md-6">
-            <h1>Student Resource Hub</h1>
+    <header class="bg-white shadow-sm">
+      <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <a routerLink="/" class="text-xl font-bold text-gray-800">Student Resource Hub</a>
+        
+        <div class="flex items-center space-x-6">
+          <a routerLink="/" routerLinkActive="text-blue-600" [routerLinkActiveOptions]="{exact: true}" 
+             class="text-gray-600 hover:text-gray-900">Home</a>
+          
+          <div class="relative">
+            <button (click)="toggleDropdown()" class="text-gray-600 hover:text-gray-900 flex items-center">
+              Categories
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div *ngIf="isDropdownOpen" class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div class="py-1">
+                <a routerLink="/categories/Programming" (click)="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Programming</a>
+                <a routerLink="/categories/Design" (click)="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Design</a>
+                <a routerLink="/categories/Math" (click)="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Math</a>
+              </div>
+            </div>
           </div>
-          <div class="col-md-6">
-            <app-navigation></app-navigation>
-          </div>
+          
+          <a routerLink="/about" routerLinkActive="text-blue-600" 
+             class="text-gray-600 hover:text-gray-900">About</a>
+          
+          <a routerLink="/add-resource" routerLinkActive="text-blue-600" 
+             class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            Add Resource
+          </a>
         </div>
-      </div>
+      </nav>
     </header>
   `,
-  styles: [],
-  imports: [forwardRef(() => NavigationComponent)]
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  isDropdownOpen = false;
 
-@Component({
-  selector: 'app-navigation',
-  template: `
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
-                Categories
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" routerLink="/categories/Programming">Programming</a></li>
-                <li><a class="dropdown-item" routerLink="/categories/Design">Design</a></li>
-                <li><a class="dropdown-item" routerLink="/categories/Math">Math</a></li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/add-resource" routerLinkActive="active">Add Resource</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  `,
-  styles: []
-})
-export class NavigationComponent {}
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  closeDropdown(): void {
+    this.isDropdownOpen = false;
+  }
+}
