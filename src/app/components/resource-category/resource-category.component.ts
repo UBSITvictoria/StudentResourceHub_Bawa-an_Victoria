@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ResourceService } from '../../services/resource.service';
 import { Resource } from '../../models/resource.model';
 import { ResourceListComponent } from '../resource-list/resource-list.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-resource-category',
@@ -19,26 +20,45 @@ import { ResourceListComponent } from '../resource-list/resource-list.component'
     </div>
   `
 })
-export class ResourceCategoryComponent implements OnInit {
+export class ResourceCategoryComponent implements OnInit, OnDestroy {
   categoryResources: Resource[] = [];
   categoryTitle: string = '';
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private resourceService: ResourceService
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const category = params['category'];
-      this.categoryTitle = this.formatCategoryTitle(category);
-      
-      this.resourceService.getResourcesByCategory(category).subscribe(
-        resources => {
-          this.categoryResources = resources;
-        }
-      );
+    // Subscribe to route changes
+    const routeSub = this.route.paramMap.subscribe(params => {
+      const category = params.get('category');
+      if (category) {
+        this.categoryTitle = this.formatCategoryTitle(category);
+        this.loadResources(category);
+      }
     });
+    this.subscriptions.push(routeSub);
+  }
+
+  ngOnDestroy(): void {
+    // Clean up all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private loadResources(category: string): void {
+    const resourceSub = this.resourceService.getResourcesByCategory(category).subscribe(
+      resources => {
+        this.categoryResources = resources;
+      },
+      error => {
+        console.error('Error loading resources:', error);
+        this.categoryResources = [];
+      }
+    );
+    this.subscriptions.push(resourceSub);
   }
 
   private formatCategoryTitle(category: string): string {

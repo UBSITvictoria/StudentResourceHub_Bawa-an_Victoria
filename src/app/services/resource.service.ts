@@ -14,12 +14,35 @@ export class ResourceService {
 
   getResourcesByCategory(category: string): Observable<Resource[]> {
     return new Observable(observer => {
-      const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-      const filtered = this.resources.value.filter(
-        resource => resource.category === normalizedCategory
-      );
-      observer.next(filtered);
-      observer.complete();
+      try {
+        // Convert input to proper case (first letter uppercase, rest lowercase)
+        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+        
+        // Ensure the category is valid
+        const validCategories: Resource['category'][] = ['Programming', 'Design', 'Math'];
+        if (!validCategories.includes(normalizedCategory as Resource['category'])) {
+          console.warn(`Invalid category: ${category}`);
+          observer.next([]);
+          observer.complete();
+          return;
+        }
+
+        // Get current resources
+        const currentResources = this.resources.value;
+        
+        // Filter resources by exact category match
+        const filtered = currentResources.filter(
+          resource => resource.category === normalizedCategory
+        );
+        
+        console.log(`Filtered ${filtered.length} resources for category: ${normalizedCategory}`);
+        observer.next(filtered);
+        observer.complete();
+      } catch (error) {
+        console.error('Error filtering resources by category:', error);
+        observer.next([]);
+        observer.complete();
+      }
     });
   }
 
