@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ResourceService } from '../../services/resource.service';
 import { Resource } from '../../models/resource.model';
 import { ResourceListComponent } from '../resource-list/resource-list.component';
@@ -7,7 +8,7 @@ import { ResourceListComponent } from '../resource-list/resource-list.component'
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ResourceListComponent],
+  imports: [CommonModule, RouterModule, ResourceListComponent],
   template: `
     <div class="container mx-auto px-4 py-8">
       <div class="text-center mb-12">

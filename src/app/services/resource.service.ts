@@ -14,7 +14,10 @@ export class ResourceService {
 
   getResourcesByCategory(category: string): Observable<Resource[]> {
     return new Observable(observer => {
-      const filtered = this.resources.value.filter(resource => resource.category === category);
+      const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+      const filtered = this.resources.value.filter(
+        resource => resource.category === normalizedCategory
+      );
       observer.next(filtered);
       observer.complete();
     });
@@ -23,7 +26,9 @@ export class ResourceService {
   addResource(resource: Omit<Resource, 'id'>): void {
     const newResource = {
       ...resource,
-      id: this.resources.value.length + 1
+      id: this.getNextId(),
+      publicationDate: new Date(),
+      isFeatured: false
     };
     this.resources.next([...this.resources.value, newResource]);
   }
@@ -34,5 +39,9 @@ export class ResourceService {
 
   getFeaturedResources(): Resource[] {
     return this.resources.value.filter(resource => resource.isFeatured);
+  }
+
+  private getNextId(): number {
+    return Math.max(...this.resources.value.map(r => r.id), 0) + 1;
   }
 }

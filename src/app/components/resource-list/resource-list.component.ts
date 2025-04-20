@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Resource } from '../../models/resource.model';
 import { ResourceService } from '../../services/resource.service';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-resource-list',
@@ -11,7 +12,11 @@ import { ActivatedRoute } from '@angular/router';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="container mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngIf="loading" class="text-center py-8">
+        <p class="text-gray-600">Loading resources...</p>
+      </div>
+      
+      <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div *ngFor="let resource of displayedResources" 
              class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
           <div class="p-6">
@@ -50,6 +55,10 @@ import { ActivatedRoute } from '@angular/router';
           </div>
         </div>
       </div>
+
+      <div *ngIf="!loading && displayedResources.length === 0" class="text-center py-8">
+        <p class="text-gray-600">No resources found.</p>
+      </div>
     </div>
   `,
   styles: [`
@@ -58,9 +67,12 @@ import { ActivatedRoute } from '@angular/router';
     }
   `]
 })
-export class ResourceListComponent implements OnInit {
+export class ResourceListComponent implements OnInit, OnDestroy {
   @Input() resources?: Resource[];
   displayedResources: Resource[] = [];
+  loading = true;
+  private routeSubscription?: Subscription;
+  private resourceSubscription?: Subscription;
 
   constructor(
     private resourceService: ResourceService,
@@ -70,18 +82,30 @@ export class ResourceListComponent implements OnInit {
   ngOnInit(): void {
     if (this.resources) {
       this.displayedResources = this.resources;
+      this.loading = false;
     } else {
-      this.route.params.subscribe(params => {
+      this.routeSubscription = this.route.params.subscribe(params => {
         if (params['category']) {
-          this.resourceService.getResourcesByCategory(params['category']).subscribe(
-            resources => this.displayedResources = resources
+          this.resourceSubscription = this.resourceService.getResourcesByCategory(params['category']).subscribe(
+            resources => {
+              this.displayedResources = resources;
+              this.loading = false;
+            }
           );
         } else {
-          this.resourceService.getResources().subscribe(
-            resources => this.displayedResources = resources
+          this.resourceSubscription = this.resourceService.getResources().subscribe(
+            resources => {
+              this.displayedResources = resources;
+              this.loading = false;
+            }
           );
         }
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.routeSubscription?.unsubscribe();
+    this.resourceSubscription?.unsubscribe();
   }
 }
